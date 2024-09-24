@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using RegistrationService.Aggregate;
 using RegistrationService.Configurations;
 using RegistrationService.RequestModel;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace RegistrationService.Application.Controllers
 {
@@ -12,10 +18,12 @@ namespace RegistrationService.Application.Controllers
     public class RegistrationController : ControllerBase
     {
         private ApplicationDbContext _registrationRepository;
+        private readonly IConfiguration _configuration;
 
-        public RegistrationController(ApplicationDbContext studentRepository)
+        public RegistrationController(ApplicationDbContext studentRepository, IConfiguration configuration)
         {
             _registrationRepository = studentRepository;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -30,15 +38,35 @@ namespace RegistrationService.Application.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var st = new Registration(model.FirstName!, model.LastName!, model.Email!, model.PhoneNumber!, model.Password);
 
                 await _registrationRepository.AddAsync(st);
                 await _registrationRepository.SaveChangesAsync(cancellationToken);
 
-                return CreatedAtAction(nameof(GetStudentById), new { id = st.Id }, st);
-
-
+                // Now generate the JWT token
+                var claims = new[] {
+            
+                    new Claim(JwtRegisteredClaimNames.Sub, model.Email!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                    new Claim("UserId", st.Id.ToString()),
+                    new Claim("DisplayName", model.FirstName!),
+                    new Claim("Email", model.Email!)
+                };
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                    _configuration["Jwt:Issuer"],
+                    _configuration["Jwt:Audience"],
+                    claims,
+                    expires: DateTime.UtcNow.AddMinutes(10),
+                    signingCredentials: signIn
+                );
+                return CreatedAtAction(nameof(GetStudentById), new { id = st.Id }, new
+                {
+                    Student = st,
+                    Token = new JwtSecurityTokenHandler().WriteToken(token)
+                });
             }
             return ValidationProblem(ModelState);
         }
@@ -49,6 +77,7 @@ namespace RegistrationService.Application.Controllers
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpGet("/get-by-id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -70,6 +99,7 @@ namespace RegistrationService.Application.Controllers
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
+       
         [HttpPost("/verify")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -82,14 +112,7 @@ namespace RegistrationService.Application.Controllers
             {
                 return Unauthorized("Invalid Email or Password.");
             }
-
-            return Ok("User verified successfully.");
+            return Ok("User verified successfully." );
         }
-
-
-
-
-
-
     }
 }
