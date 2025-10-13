@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using RegistrationService.Aggregate;
+using RegistrationService.Aggregate.RegistrationAggregate;
 using RegistrationService.Configurations;
 using RegistrationService.RequestModel;
 using System.IdentityModel.Tokens.Jwt;

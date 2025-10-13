@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RegistrationService.Aggregate;
+using RegistrationService.Aggregate.AddressAggregate;
+using RegistrationService.Aggregate.RegistrationAggregate;
 using System.Reflection;
 
 namespace RegistrationService.Configurations

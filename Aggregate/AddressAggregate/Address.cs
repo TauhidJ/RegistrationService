@@ -1,4 +1,4 @@
-﻿namespace RegistrationService.Aggregate
+﻿namespace RegistrationService.Aggregate.AddressAggregate
 {
     public class Address
     {

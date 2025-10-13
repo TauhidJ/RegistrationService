@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RegistrationService.Aggregate;
+using RegistrationService.Aggregate.AddressAggregate;
 
 namespace RegistrationService.Configurations
 {

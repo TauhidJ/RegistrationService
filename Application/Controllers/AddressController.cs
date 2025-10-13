@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RegistrationService.Aggregate;
+using RegistrationService.Aggregate.AddressAggregate;
 using RegistrationService.Configurations;
 using RegistrationService.RequestModel;
 using System.Text.Json.Nodes;
