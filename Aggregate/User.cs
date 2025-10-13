@@ -37,7 +37,7 @@ namespace RegistrationService.Aggregate
 
         public DateOfBirth? DateOfBirth { get; private set; }
         public int? GenderId { get; private set; }
-        //public Gender Gender => Enumeration.FromValue<Gender>((int)GenderId);
+        public Gender Gender => Enumeration.FromValue<Gender>((int)GenderId);
         public Location? Location { get; private set; }
         public decimal? AverageRating { get; private set; }
         public int? RatingCount { get; private set; }
