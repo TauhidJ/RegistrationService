@@ -14,6 +14,7 @@ namespace RegistrationService.Configurations
 
         }
         public DbSet<Registration> Registration { get; set; }
+        public DbSet<Address> Address { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
