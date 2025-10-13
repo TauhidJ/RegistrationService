@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RegistrationService.Aggregate;
 using RegistrationService.Configurations;
 using RegistrationService.RequestModel;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace RegistrationService.Application.Controllers
@@ -14,13 +12,11 @@ namespace RegistrationService.Application.Controllers
     public class AddressController : ControllerBase
     {
         private ApplicationDbContext _addressRepository;
-        private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
-        public AddressController(ApplicationDbContext addressRepository, IConfiguration configuration)
+        public AddressController(ApplicationDbContext addressRepository)
         {
             _addressRepository = addressRepository;
-            _configuration = configuration;
             _httpClient = new HttpClient();
         }
 
